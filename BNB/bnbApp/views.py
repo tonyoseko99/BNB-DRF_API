@@ -10,3 +10,13 @@ def user_list(request):
     users = User.objects.all()
     data = {'results': [{'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name,
                          'email': user.email, 'password': user.password, 'is_host': user.is_host} for user in users]}
+    return JsonResponse(data)
+
+# get a single user
+
+
+def user_detail(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    data = {'id': user.id, 'first_name': user.first_name,
+            'last_name': user.last_name, 'email': user.email, 'password': user.password, 'is_host': user.is_host}
+    return JsonResponse(data)
