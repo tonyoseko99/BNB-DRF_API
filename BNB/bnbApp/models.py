@@ -15,13 +15,31 @@ class User(models.Model):
 
 
 class Listing(models.Model):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='listings')
+    owner = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='listings')
     title = models.CharField(max_length=100)
     description = models.TextField()
     location = models.CharField(max_length=100)
     price_per_night = models.DecimalField(max_digits=7, decimal_places=2)
     number_of_rooms = models.PositiveSmallIntegerField()
-    number_of_guests = models.PositiveSmallIntegerField()
+    max_guests = models.PositiveSmallIntegerField()
 
     def __str__(self):
         return self.title
+
+
+class Reservation(models.Model):
+    listing = models.ForeignKey(
+        Listing, on_delete=models.CASCADE, related_name='reservations')
+    guest = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='reservations')
+    start_date = models.DateField()
+    end_date = models.DateField()
+    number_of_guests = models.PositiveSmallIntegerField()
+    total_price = models.DecimalField(max_digits=7, decimal_places=2)
+
+    def __str__(self):
+        return f'{self.guest} - {self.listing} {self.start_date} - {self.end_date}'
+
+
+class 
