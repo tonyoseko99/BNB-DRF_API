@@ -42,4 +42,12 @@ class Reservation(models.Model):
         return f'{self.guest} - {self.listing} {self.start_date} - {self.end_date}'
 
 
-class 
+class Review(models.Model):
+    reservation = models.OneToOneField(
+        Reservation, on_delete=models.CASCADE, related_name='review')
+    text = models.TextField()
+    rating = models.PositiveSmallIntegerField()
+    date = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.reservation} - {self.rating} stars'
