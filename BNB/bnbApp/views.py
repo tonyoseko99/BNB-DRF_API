@@ -303,3 +303,14 @@ class AmenityDelete(LoginRequiredMixin, DeleteView):
         self.object = self.get_object()
         self.object.delete()
         return JsonResponse({"message": "Amenity deleted successfully"})
+
+# create a location
+
+
+def create_location(request):
+    data = {}
+    data['name'] = request.POST.get('name')
+    data['listings'] = request.POST.get('listings')
+    location = Location.objects.create(**data)
+    data['id'] = location.id
+    return JsonResponse(data)
