@@ -323,3 +323,11 @@ def location_list(request):
     data = {'results': [{'id': location.id, 'name': location.name, 'listings': location.listings}
                         for location in locations]}
     return JsonResponse(data)
+
+# get a single location
+
+
+def location_detail(request, pk):
+    location = get_object_or_404(Location, pk=pk)
+    data = {'id': location.id, 'name': location.name, 'listings': location.listings}
+    return JsonResponse(data)
