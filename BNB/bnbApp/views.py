@@ -177,7 +177,35 @@ class ReservationUpdate(LoginRequiredMixin, UpdateView):
         reservation_id = self.kwargs.get('pk')
         return Reservation.objects.get(id=reservation_id)
 
-# get all reviews
+# delete a reservation
+
+
+class ReservationDelete(LoginRequiredMixin, DeleteView):
+    model = Reservation
+
+    def get_object(self, queryset=None):
+        reservation_id = self.kwargs.get('pk')
+        return Reservation.objects.get(id=reservation_id)
+
+    def deleteReservation(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
+        return JsonResponse({"message": "Reservation deleted successfully"})
+
+# create a review
+
+
+def create_review(request):
+    data = {}
+    data['reservation'] = request.POST.get('reservation')
+    data['text'] = request.POST.get('text')
+    data['rating'] = request.POST.get('rating')
+    data['date'] = request.POST.get('date')
+    review = Review.objects.create(**data)
+    data['id'] = review.id
+    return JsonResponse(data)
+
+    # get all reviews
 
 
 def review_list(request):
