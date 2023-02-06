@@ -329,7 +329,8 @@ def location_list(request):
 
 def location_detail(request, pk):
     location = get_object_or_404(Location, pk=pk)
-    data = {'id': location.id, 'name': location.name, 'listings': location.listings}
+    data = {'id': location.id, 'name': location.name,
+            'listings': location.listings}
     return JsonResponse(data)
 
 # update a location
@@ -342,3 +343,18 @@ class LocationUpdate(LoginRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         location_id = self.kwargs.get('pk')
         return Location.objects.get(id=location_id)
+
+# delete a location
+
+
+class LocationDelete(LoginRequiredMixin, DeleteView):
+    model = Location
+
+    def get_object(self, queryset=None):
+        location_id = self.kwargs.get('pk')
+        return Location.objects.get(id=location_id)
+
+    def delete_location(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
+        return JsonResponse({"message": "Location deleted successfully"})
