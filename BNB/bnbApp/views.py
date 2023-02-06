@@ -331,3 +331,14 @@ def location_detail(request, pk):
     location = get_object_or_404(Location, pk=pk)
     data = {'id': location.id, 'name': location.name, 'listings': location.listings}
     return JsonResponse(data)
+
+# update a location
+
+
+class LocationUpdate(LoginRequiredMixin, UpdateView):
+    model = Location
+    fields = ['name', 'listings']
+
+    def get_object(self, queryset=None):
+        location_id = self.kwargs.get('pk')
+        return Location.objects.get(id=location_id)
