@@ -1,12 +1,11 @@
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
 from django.views.generic import UpdateView, DeleteView
 
-
+from .serializers import UserSerializer, ListingSerializer, ReservationSerializer, ReviewSerializer, AmenitySerializer, LocationSerializer
 from .models import User, Listing, Reservation, Review, Amenity, Location, ListingAmenity
 
 
@@ -14,34 +13,35 @@ from .models import User, Listing, Reservation, Review, Amenity, Location, Listi
 
 
 def user_create(request):
-    data = {}
     if request.method == 'POST':
-        data['first_name'] = request.POST.get('first_name')
-        data['last_name'] = request.POST.get('last_name')
-        data['email'] = request.POST.get('email')
-        data['password'] = request.POST.get('password')
-        data['is_host'] = request.POST.get('is_host')
-        user = User.objects.create(**data)
-        data['id'] = user.id
-    return JsonResponse(data)
+        user = User.objects.create_user(
+            first_name=request.POST.get('first_name'),
+            last_name=request.POST.get('last_name'),
+            email=request.POST.get('email'),
+            password=request.POST.get('password'),
+            is_host=request.POST.get('is_host')
+        )
+        data = {'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name,
+                'email': user.email, 'password': user.password, 'is_host': user.is_host}
+        return JsonResponse(data)
 
 # get all users
 
 
 def user_list(request):
     users = User.objects.all()
-    data = {'results': [{'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name,
-                         'email': user.email, 'password': user.password, 'is_host': user.is_host} for user in users]}
-    return JsonResponse(data)
+    serializer = UserSerializer(users, many=True)
+
+    return JsonResponse(serializer.data, safe=False)
 
 # get a single user
 
 
 def user_detail(request, pk):
     user = get_object_or_404(User, pk=pk)
-    data = {'id': user.id, 'first_name': user.first_name,
-            'last_name': user.last_name, 'email': user.email, 'password': user.password, 'is_host': user.is_host}
-    return JsonResponse(data)
+    serializer = UserSerializer(user)
+
+    return JsonResponse(serializer.data)
 
 # update a user
 
@@ -53,6 +53,15 @@ class UserUpdate(LoginRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         user_id = self.kwargs.get('pk')
         return User.objects.get(id=user_id)
+
+    def form_valid(self, form):
+        try:
+            user = form.save(commit=False)
+            user.save()
+            return JsonResponse({'message': 'User updated successfully'})
+        except Exception as e:
+            return JsonResponse({'message': str(e)})
+
 
 # delete a user
 
@@ -73,16 +82,17 @@ class UserDelete(LoginRequiredMixin, DeleteView):
 
 
 def listing_create(request):
-    data = {}
-    data['owner'] = request.POST.get('owner')
-    data['title'] = request.POST.get('title')
-    data['description'] = request.POST.get('description')
-    data['location'] = request.POST.get('location')
-    data['price_per_night'] = request.POST.get('price_per_night')
-    data['number_of_rooms'] = request.POST.get('number_of_rooms')
-    data['max_guests'] = request.POST.get('max_guests')
-    listing = Listing.objects.create(**data)
-    data['id'] = listing.id
+    listing = Listing.objects.create(
+        owner=request.POST.get('owner'),
+        title=request.POST.get('title'),
+        description=request.POST.get('description'),
+        location=request.POST.get('location'),
+        price_per_night=request.POST.get('price_per_night'),
+        number_of_rooms=request.POST.get('number_of_rooms'),
+        max_guests=request.POST.get('max_guests')
+    )
+    data = {'id': listing.id, 'owner': listing.owner.id, 'title': listing.title, 'description': listing.description, 'location': listing.location.id,
+            'price_per_night': listing.price_per_night, 'number_of_rooms': listing.number_of_rooms, 'max_guests': listing.max_guests}
     return JsonResponse(data)
 
 # get all listings
@@ -114,6 +124,16 @@ class ListingUpdate(LoginRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         listing_id = self.kwargs.get('pk')
         return Listing.objects.get(id=listing_id)
+
+    # update listing
+
+    def form_valid(self, form):
+        try:
+            listing = form.save(commit=False)
+            listing.save()
+            return JsonResponse({'message': 'Listing updated successfully'})
+        except Exception as e:
+            return JsonResponse({'message': str(e)})
 
 # delete a listing
 
