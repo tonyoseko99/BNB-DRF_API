@@ -107,3 +107,22 @@ class ReservationUpdate(LoginRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         reservation_id = self.kwargs.get('pk')
         return Reservation.objects.get(id=reservation_id)
+
+# get all reviews
+
+
+def review_list(request):
+    reviews = Review.objects.all()
+    data = {'results': [{'id': review.id, 'listing': review.listing.id, 'guest': review.guest.id,
+                         'review': review.review, 'rating': review.rating} for review in reviews]}
+    return JsonResponse(data)
+
+# get a single review
+
+
+def review_detail(request, pk):
+    review = get_object_or_404(Review, pk=pk)
+    data = {'id': review.id, 'listing': review.listing.id,
+            'guest': review.guest.id, }
+
+    return JsonResponse(data)
