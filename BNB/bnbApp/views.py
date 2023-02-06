@@ -234,3 +234,18 @@ class ReviewUpdate(LoginRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         review_id = self.kwargs.get('pk')
         return Review.objects.get(id=review_id)
+
+# delete a review
+
+
+class ReviewDelete(LoginRequiredMixin, DeleteView):
+    model = Review
+
+    def get_object(self, queryset=None):
+        review_id = self.kwargs.get('pk')
+        return Review.objects.get(id=review_id)
+
+    def delete_review(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
+        return JsonResponse({"message": "Review deleted successfully"})
