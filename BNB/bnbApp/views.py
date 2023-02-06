@@ -288,3 +288,18 @@ class AmenityUpdate(LoginRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         amenity_id = self.kwargs.get('pk')
         return Amenity.objects.get(id=amenity_id)
+
+# delete an amenity
+
+
+class AmenityDelete(LoginRequiredMixin, DeleteView):
+    model = Amenity
+
+    def get_object(self, queryset=None):
+        amenity_id = self.kwargs.get('pk')
+        return Amenity.objects.get(id=amenity_id)
+
+    def delete_amenity(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
+        return JsonResponse({"message": "Amenity deleted successfully"})
