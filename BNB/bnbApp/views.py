@@ -345,6 +345,22 @@ class ListingAmenityUpdate(LoginRequiredMixin, UpdateView):
         return ListingAmenity.objects.get(id=listing_amenity_id)
 
 
+# delete a listing amenity
+
+
+class ListingAmenityDelete(LoginRequiredMixin, DeleteView):
+    model = ListingAmenity
+
+    def get_object(self, queryset=None):
+        listing_amenity_id = self.kwargs.get('pk')
+        return ListingAmenity.objects.get(id=listing_amenity_id)
+
+    def delete_listing_amenity(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
+        return JsonResponse({"message": "Listing amenity deleted successfully"})
+
+
 # create a location
 
 
