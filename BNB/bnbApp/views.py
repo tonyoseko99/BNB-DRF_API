@@ -259,3 +259,14 @@ def create_amenity(request):
     amenity = Amenity.objects.create(**data)
     data['id'] = amenity.id
     return JsonResponse(data)
+
+# get all amenities
+
+
+def amenity_list(request):
+    amenities = Amenity.objects.all()
+    data = {'results': [{'id': amenity.id, 'name': amenity.name}
+                        for amenity in amenities]}
+    return JsonResponse(data)
+
+
