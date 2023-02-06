@@ -315,6 +315,15 @@ def create_listing_amenity(request):
     data['id'] = listing_amenity.id
     return JsonResponse(data)
 
+# get all listing amenities
+
+
+def listing_amenity_list(request):
+    listing_amenities = ListingAmenity.objects.all()
+    data = {'results': [{'id': listing_amenity.id, 'listing': listing_amenity.listing.id, 'amenity': listing_amenity.amenity.id}
+                        for listing_amenity in listing_amenities]}
+    return JsonResponse(data)
+
 
 # create a location
 
