@@ -69,6 +69,22 @@ class UserDelete(LoginRequiredMixin, DeleteView):
         self.object.delete()
         return JsonResponse({'message': 'User deleted successfully'})
 
+# create a listing
+
+
+def listing_create(request):
+    data = {}
+    data['owner'] = request.POST.get('owner')
+    data['title'] = request.POST.get('title')
+    data['description'] = request.POST.get('description')
+    data['location'] = request.POST.get('location')
+    data['price_per_night'] = request.POST.get('price_per_night')
+    data['number_of_rooms'] = request.POST.get('number_of_rooms')
+    data['max_guests'] = request.POST.get('max_guests')
+    listing = Listing.objects.create(**data)
+    data['id'] = listing.id
+    return JsonResponse(data)
+
 # get all listings
 
 

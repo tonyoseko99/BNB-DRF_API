@@ -2,16 +2,20 @@ from django.db import models
 
 # Create your models here.
 
+# User model
+
 
 class User(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     email = models.EmailField(unique=True)
-    password = models.CharField(max_length=100)
+    password = models.CharField(max_length=30)
     is_host = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
+
+# Listing model
 
 
 class Listing(models.Model):
@@ -27,6 +31,8 @@ class Listing(models.Model):
     def __str__(self):
         return self.title
 
+# Reservation model
+
 
 class Reservation(models.Model):
     listing = models.ForeignKey(
@@ -40,6 +46,8 @@ class Reservation(models.Model):
 
     def __str__(self):
         return f'{self.guest} - {self.listing} {self.start_date} - {self.end_date}'
+
+# Review model
 
 
 class Review(models.Model):
@@ -59,6 +67,8 @@ class Amenity(models.Model):
     def __str__(self):
         return self.name
 
+# Many to many relationship between Listing and Amenity
+
 
 class ListingAmenity(models.Model):
     listing = models.ForeignKey(
@@ -67,6 +77,8 @@ class ListingAmenity(models.Model):
 
     def __str__(self):
         return f'{self.listing} - {self.amenity}'
+
+# Many to many relationship between Listing and Location
 
 
 class Location(models.Model):
