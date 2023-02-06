@@ -205,7 +205,7 @@ def create_review(request):
     data['id'] = review.id
     return JsonResponse(data)
 
-    # get all reviews
+# get all reviews
 
 
 def review_list(request):
@@ -225,3 +225,12 @@ def review_detail(request, pk):
     return JsonResponse(data)
 
 # update a review
+
+
+class ReviewUpdate(LoginRequiredMixin, UpdateView):
+    model = Review
+    fields = ['reservation', 'text', 'rating', 'date']
+
+    def get_object(self, queryset=None):
+        review_id = self.kwargs.get('pk')
+        return Review.objects.get(id=review_id)
