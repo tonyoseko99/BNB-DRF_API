@@ -277,3 +277,14 @@ def amenity_detail(request, pk):
     data = {'id': amenity.id, 'name': amenity.name}
     return JsonResponse(data)
 
+
+# update an amenity
+
+
+class AmenityUpdate(LoginRequiredMixin, UpdateView):
+    model = Amenity
+    fields = ['name']
+
+    def get_object(self, queryset=None):
+        amenity_id = self.kwargs.get('pk')
+        return Amenity.objects.get(id=amenity_id)
