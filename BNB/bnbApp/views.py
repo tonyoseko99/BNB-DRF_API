@@ -95,3 +95,15 @@ def reservation_detail(request, pk):
     data = {'id': reservation.id, 'listing': reservation.listing.id, 'guest': reservation.guest.id, 'start_date': reservation.start_date, 'end_date': reservation.end_date,
             'number_of_guests': reservation.number_of_guests, 'total_price': reservation.total_price}
     return JsonResponse(data)
+
+# update a reservation
+
+
+class ReservationUpdate(LoginRequiredMixin, UpdateView):
+    model = Reservation
+    fields = ['listing', 'guest', 'start_date', 'end_date',
+              'number_of_guests', 'total_price']
+
+    def get_object(self, queryset=None):
+        reservation_id = self.kwargs.get('pk')
+        return Reservation.objects.get(id=reservation_id)
