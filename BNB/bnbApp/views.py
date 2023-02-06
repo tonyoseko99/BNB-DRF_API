@@ -132,6 +132,21 @@ class ListingDelete(LoginRequiredMixin, DeleteView):
         self.object.delete()
         return JsonResponse({"message": "Listing deleted Successfully"})
 
+# create a reservation
+
+
+def create_reservation(request):
+    data = {}
+    data['listing'] = request.POST.get('listing')
+    data['guest'] = request.POST.get('guest')
+    data['start_date'] = request.POST.get('start_date')
+    data['end_date'] = request.POST.get('end_date')
+    data['number_of_guests'] = request.POST.get('number_of_guests')
+    data['total_price'] = request.POST.get('total_price')
+    reservation = Reservation.objects.create(**data)
+    data['id'] = reservation.id
+    return JsonResponse(data)
+
 # get all reservations
 
 
