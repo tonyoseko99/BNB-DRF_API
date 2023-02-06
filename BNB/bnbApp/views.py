@@ -314,3 +314,12 @@ def create_location(request):
     location = Location.objects.create(**data)
     data['id'] = location.id
     return JsonResponse(data)
+
+# get all locations
+
+
+def location_list(request):
+    locations = Location.objects.all()
+    data = {'results': [{'id': location.id, 'name': location.name, 'listings': location.listings}
+                        for location in locations]}
+    return JsonResponse(data)
