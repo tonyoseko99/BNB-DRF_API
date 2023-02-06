@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import UpdateView, DeleteView
 
 
-from .models import User, Listing, Reservation, Review, Amenity
+from .models import User, Listing, Reservation, Review, Amenity, Location, ListingAmenity
 
 
 # create a user
@@ -249,3 +249,13 @@ class ReviewDelete(LoginRequiredMixin, DeleteView):
         self.object = self.get_object()
         self.object.delete()
         return JsonResponse({"message": "Review deleted successfully"})
+
+
+# create an Amenity
+
+def create_amenity(request):
+    data = {}
+    data['name'] = request.POST.get('name')
+    amenity = Amenity.objects.create(**data)
+    data['id'] = amenity.id
+    return JsonResponse(data)
