@@ -333,6 +333,17 @@ def listing_amenity_detail(request, pk):
             'amenity': listing_amenity.amenity.id}
     return JsonResponse(data)
 
+# update a listing amenity
+
+
+class ListingAmenityUpdate(LoginRequiredMixin, UpdateView):
+    model = ListingAmenity
+    fields = ['listing', 'amenity']
+
+    def get_object(self, queryset=None):
+        listing_amenity_id = self.kwargs.get('pk')
+        return ListingAmenity.objects.get(id=listing_amenity_id)
+
 
 # create a location
 
