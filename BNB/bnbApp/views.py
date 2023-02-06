@@ -269,4 +269,11 @@ def amenity_list(request):
                         for amenity in amenities]}
     return JsonResponse(data)
 
+# get a single amenity
+
+
+def amenity_detail(request, pk):
+    amenity = get_object_or_404(Amenity, pk=pk)
+    data = {'id': amenity.id, 'name': amenity.name}
+    return JsonResponse(data)
 
