@@ -9,6 +9,22 @@ from django.views.generic import UpdateView, DeleteView
 
 from .models import User, Listing, Reservation, Review, Amenity
 
+
+# create a user
+
+
+def user_create(request):
+    data = {}
+    if request.method == 'POST':
+        data['first_name'] = request.POST.get('first_name')
+        data['last_name'] = request.POST.get('last_name')
+        data['email'] = request.POST.get('email')
+        data['password'] = request.POST.get('password')
+        data['is_host'] = request.POST.get('is_host')
+        user = User.objects.create(**data)
+        data['id'] = user.id
+    return JsonResponse(data)
+
 # get all users
 
 
@@ -44,9 +60,14 @@ class UserUpdate(LoginRequiredMixin, UpdateView):
 class UserDelete(LoginRequiredMixin, DeleteView):
     model = User
 
-    def get_object(self):
-        return self.request.user
+    def get_object(self, queryset=None):
+        user_id = self.kwargs.get('pk')
+        return User.objects.get(id=user_id)
 
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
+        return JsonResponse({'message': 'User deleted successfully'})
 
 # get all listings
 
@@ -126,3 +147,5 @@ def review_detail(request, pk):
             'guest': review.guest.id, }
 
     return JsonResponse(data)
+
+# update a review
