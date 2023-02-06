@@ -324,6 +324,15 @@ def listing_amenity_list(request):
                         for listing_amenity in listing_amenities]}
     return JsonResponse(data)
 
+# get a single listing amenity
+
+
+def listing_amenity_detail(request, pk):
+    listing_amenity = get_object_or_404(ListingAmenity, pk=pk)
+    data = {'id': listing_amenity.id, 'listing': listing_amenity.listing.id,
+            'amenity': listing_amenity.amenity.id}
+    return JsonResponse(data)
+
 
 # create a location
 
