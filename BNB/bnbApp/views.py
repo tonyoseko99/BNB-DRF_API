@@ -115,6 +115,23 @@ class ListingUpdate(LoginRequiredMixin, UpdateView):
         listing_id = self.kwargs.get('pk')
         return Listing.objects.get(id=listing_id)
 
+# delete a listing
+
+
+class ListingDelete(LoginRequiredMixin, DeleteView):
+    model = Listing
+    #  get the listing object by id
+
+    def get_object(self, queryset=None):
+        listing_id = self.kwargs.get('pk')
+        return Listing.objects.get(id=listing_id)
+
+    # delete listing
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
+        return JsonResponse({"message": "Listing deleted Successfully"})
+
 # get all reservations
 
 
