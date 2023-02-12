@@ -4,6 +4,8 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
 from django.views.generic import UpdateView, DeleteView
+from django.views.decorators.csrf import csrf_exempt
+
 
 from .serializers import UserSerializer, ListingSerializer, ReservationSerializer, ReviewSerializer, AmenitySerializer, LocationSerializer
 from .models import User, Listing, Reservation, Review, Amenity, Location, ListingAmenity
@@ -11,10 +13,10 @@ from .models import User, Listing, Reservation, Review, Amenity, Location, Listi
 
 # create a user
 
-
+@csrf_exempt
 def user_create(request):
     if request.method == 'POST':
-        user = User.objects.create_user(
+        user = User.objects.create(
             first_name=request.POST.get('first_name'),
             last_name=request.POST.get('last_name'),
             email=request.POST.get('email'),

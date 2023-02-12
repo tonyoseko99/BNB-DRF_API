@@ -6,7 +6,7 @@ from django.db import models
 
 
 class User(models.Model):
-    first_name = models.CharField(max_length=30)
+    first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=30)
