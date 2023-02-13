@@ -15,16 +15,16 @@ from .models import User, Listing, Reservation, Review, Amenity, Location, Listi
 
 @csrf_exempt
 def user_create(request):
-    user = User.objects.create(
-        first_name=request.POST.get('first_name'),
-        last_name=request.POST.get('last_name'),
-        email=request.POST.get('email'),
-        password=request.POST.get('password'),
-        is_host=request.POST.get('is_host')
-    )
-    data = {'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name,
-            'email': user.email, 'password': user.password, 'is_host': user.is_host}
-    return JsonResponse(data)
+    if request.method == 'POST':
+        user = User.objects.create(
+            first_name=request.POST.get('first_name'),
+            last_name=request.POST.get('last_name'),
+            email=request.POST.get('email'),
+            password=request.POST.get('password'),
+            is_host=request.POST.get('is_host')
+        )
+        serializer = UserSerializer(user)
+        return JsonResponse(serializer.data)
 
 # get all users
 
