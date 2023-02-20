@@ -72,16 +72,11 @@ def user_update(request, pk):
 
 @csrf_exempt
 def user_delete(request, pk):
-    try:
-        user = User.objects.get(pk=pk)
-    except User.DoesNotExist:
-        return JsonResponse({'error': 'User not found'}, status=404)
-
     if request.method == 'DELETE':
+        user = User.objects.get(pk=pk)
         user.delete()
-        return JsonResponse({'message': 'User deleted successfully'})
-    else:
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
+        return JsonResponse({"message": "user deleted successfully"}, status=200)
+    return JsonResponse({"message": "Invalid request method"}, status=405)
 
 # create a listing
 
