@@ -58,26 +58,14 @@ def user_detail(request, pk):
 @csrf_exempt
 # update a user using UpdateView
 def user_update(request, pk):
-    try:
-        user = User.objects.get(pk=pk)
-    except User.DoesNotExist:
-        return JsonResponse({'error': 'User not found'}, status=404)
-
     if request.method == 'PATCH':
-        # try to parse the request data as JSON
-        try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            # if the request data is not JSON, parse it as form data
-            data = request.POST
-
+        data = JSONParser().parse(request)
+        user = User.objects.get(pk=pk)
         serializer = UserSerializer(user, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, {'message': 'User updated successfully'})
+            return JsonResponse(serializer.data, status=200)
         return JsonResponse(serializer.errors, status=400)
-    else:
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 
 # delete a user
@@ -141,7 +129,6 @@ def listing_update(request, pk):
             serializer.save()
             return JsonResponse(serializer.data, status=200)
         return JsonResponse(serializer.errors, status=400)
-    
 
 
 # delete a listing
