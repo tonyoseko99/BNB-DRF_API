@@ -16,7 +16,7 @@ urlpatterns = [
     path('listing/list/', listing_list, name='listing_list'),
     path('listing/<int:pk>/', listing_detail, name='listing_detail'),
     path('listing/<int:pk>/update/',
-         ListingUpdate.as_view(), name='listing_update'),
+         listing_update, name='listing_update'),
     path('listing/<int:pk>/delete/',
          ListingDelete.as_view(), name='listing_delete'),
 

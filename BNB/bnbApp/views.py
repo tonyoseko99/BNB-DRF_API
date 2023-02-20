@@ -1,4 +1,5 @@
 import json
+import requests
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.hashers import make_password
@@ -99,31 +100,13 @@ def user_delete(request, pk):
 
 @csrf_exempt
 def listing_create(request):
-    owner_id = request.POST.get('owner')
-    title = request.POST.get('title')
-    description = request.POST.get('description')
-    location = request.POST.get('location')
-    price_per_night = request.POST.get('price_per_night')
-    number_of_rooms = request.POST.get('number_of_rooms')
-    max_guests = request.POST.get('max_guests')
-
-    if not (owner_id and title and description and location and price_per_night and number_of_rooms and max_guests):
-        return JsonResponse({"Error": "All fields are required."}, status=400)
-
-    owner = User.objects.get(pk=owner_id)
-
-    listing = Listing.objects.create(
-        owner = owner,
-        title = title,
-        description = description,
-        location = location,
-        price_per_night = price_per_night,
-        number_of_rooms = number_of_rooms,
-        max_guests = max_guests
-    )
-
-    serializer = ListingSerializer(listing)
-    return JsonResponse(serializer.data)
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = ListingSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201,)
+        return JsonResponse(serializer.errors, status=400)
 
 
 # get all listings
@@ -148,24 +131,18 @@ def listing_detail(request, pk):
 # update a listing
 
 
-class ListingUpdate(UpdateView):
-    model = Listing
-    fields = ['title', 'description', 'location',
-              'price_per_night', 'number_of_rooms', 'max_guests']
+@csrf_exempt
+def listing_update(request, pk):
+    if request.method == 'PATCH':
+        data = JSONParser().parse(request)
+        listing = Listing.objects.get(pk=pk)
+        serializer = ListingSerializer(listing, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=200)
+        return JsonResponse(serializer.errors, status=400)
+    
 
-    def get_object(self, queryset=None):
-        listing_id = self.kwargs.get('pk')
-        return Listing.objects.get(id=listing_id)
-
-    # update listing
-
-    def form_valid(self, form):
-        try:
-            listing = form.save(commit=False)
-            listing.save()
-            return JsonResponse({'message': 'Listing updated successfully'})
-        except Exception as e:
-            return JsonResponse({'message': str(e)})
 
 # delete a listing
 
