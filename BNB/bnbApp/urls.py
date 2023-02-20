@@ -27,7 +27,7 @@ urlpatterns = [
     path('reservation/<int:pk>/update/',
          reservation_update, name='reservation_update'),
     path('reservation/<int:pk>/delete/',
-         ReservationDelete.as_view(), name='reservation_delete'),
+         reservation_delete, name='reservation_delete'),
 
     # reviews urls
     path('review/create/', create_review, name='review_create'),

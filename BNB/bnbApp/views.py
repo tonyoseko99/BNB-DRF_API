@@ -173,7 +173,8 @@ def reservation_update(request, pk):
     if request.method == 'PATCH':
         data = JSONParser().parse(request)
         reservation = Reservation.objects.get(pk=pk)
-        serializer = ReservationSerializer(reservation, data=data, partial=True)
+        serializer = ReservationSerializer(
+            reservation, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse({"message": "Reservation updated successfully"}, status=200)
@@ -182,17 +183,13 @@ def reservation_update(request, pk):
 # delete a reservation
 
 
-class ReservationDelete(LoginRequiredMixin, DeleteView):
-    model = Reservation
-
-    def get_object(self, queryset=None):
-        reservation_id = self.kwargs.get('pk')
-        return Reservation.objects.get(id=reservation_id)
-
-    def deleteReservation(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.object.delete()
-        return JsonResponse({"message": "Reservation deleted successfully"})
+@csrf_exempt
+def reservation_delete(request, pk):
+    if request.method == 'DELETE':
+        reservation = Reservation.objects.get(pk=pk)
+        reservation.delete()
+        return JsonResponse({"message": "Reservation deleted successfully"}, status=200)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 # create a review
 
