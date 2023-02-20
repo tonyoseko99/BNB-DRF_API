@@ -4,6 +4,9 @@ from django.contrib.auth.hashers import make_password
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
+
+from rest_framework.parsers import JSONParser
+
 from django.views.generic import UpdateView, DeleteView
 from django.views.decorators.csrf import csrf_exempt
 
@@ -12,7 +15,10 @@ from .serializers import UserSerializer, ListingSerializer, ReservationSerialize
 from .models import User, Listing, Reservation, Review, Amenity, ListingAmenity
 
 
+def home_view(request):
+    return JsonResponse({'message': 'Welcome to the BnB API'})
 # create a user
+
 
 @csrf_exempt
 def user_create(request):
@@ -47,21 +53,17 @@ def user_detail(request, pk):
 # update a user
 
 
-class UserUpdate(LoginRequiredMixin, UpdateView):
-    model = User
-    fields = ['first_name', 'last_name', 'email', 'password', 'is_host']
+@csrf_exempt
+def user_update(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    data = JSONParser().parse(request)
+    serializer = UserSerializer(user, data=data)
 
-    def get_object(self, queryset=None):
-        user_id = self.kwargs.get('pk')
-        return User.objects.get(id=user_id)
-
-    def form_valid(self, form):
-        try:
-            user = form.save(commit=False)
-            user.save()
-            return JsonResponse({'message': 'User updated successfully'})
-        except Exception as e:
-            return JsonResponse({'message': str(e)})
+    serializer = UserSerializer(user)
+    if serializer.is_valid():
+        serializer.save()
+        return JsonResponse(serializer.data)
+    return JsonResponse(serializer.errors, status=400)
 
 
 # delete a user
@@ -111,14 +113,14 @@ def listing_list(request):
 
 def listing_detail(request, pk):
     listing = get_object_or_404(Listing, pk=pk)
-    data = {'id': listing.id, 'owner': listing.owner.id, 'title': listing.title, 'description': listing.description, 'location': listing.location,
-            'price_per_night': listing.price_per_night, 'number_of_rooms': listing.number_of_rooms, 'max_guests': listing.max_guests}
-    return JsonResponse(data)
+    serializer = ListingSerializer(listing)
+
+    return JsonResponse(serializer.data)
 
 # update a listing
 
 
-class ListingUpdate(LoginRequiredMixin, UpdateView):
+class ListingUpdate(UpdateView):
     model = Listing
     fields = ['title', 'description', 'location',
               'price_per_night', 'number_of_rooms', 'max_guests']

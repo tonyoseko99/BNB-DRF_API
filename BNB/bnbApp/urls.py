@@ -2,11 +2,13 @@ from django.urls import path
 from .views import *  # import all views from views.py
 
 urlpatterns = [
+    # home page
+    # path('', home_view, name='home'),
     # user urls
     path('user/create/', user_create, name='user_create'),
     path('user/list/', user_list, name='user_list'),
     path('user/<int:pk>/', user_detail, name='user_detail'),
-    path('user/<int:pk>/update/', UserUpdate.as_view(), name='user_update'),
+    path('user/<int:pk>/update/', user_update, name='user_update'),
     path('user/<int:pk>/delete/', UserDelete.as_view(), name='user_delete'),
 
     # listing urls
@@ -56,12 +58,12 @@ urlpatterns = [
          ListingAmenityDelete.as_view(), name='listing_amenity_delete'),
 
     # location urls
-#     path('location/create/', create_location, name='location_create'),
-#     path('location/list/', location_list, name='location_list'),
-#     path('location/<int:pk>/', location_detail, name='location_detail'),
-#     path('location/<int:pk>/update/',
-#          LocationUpdate.as_view(), name='location_update'),
-#     path('location/<int:pk>/delete/',
-#          LocationDelete.as_view(), name='location_delete'),
+    #     path('location/create/', create_location, name='location_create'),
+    #     path('location/list/', location_list, name='location_list'),
+    #     path('location/<int:pk>/', location_detail, name='location_detail'),
+    #     path('location/<int:pk>/update/',
+    #          LocationUpdate.as_view(), name='location_update'),
+    #     path('location/<int:pk>/delete/',
+    #          LocationDelete.as_view(), name='location_delete'),
 
 ]  # end of urlpatterns
