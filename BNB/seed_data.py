@@ -24,5 +24,18 @@ for i in range(30):
         location=fake.city(),
         price_per_night=fake.random_int(50, 500),
         number_of_rooms=fake.random_int(1, 5),
-        max_guests=fake.random_int(1, 10)
+        max_guests=fake.random_int(1, 10),
+        image=fake.image_url()
+    )
+
+
+# Create 50 reservations
+for i in range(50):
+    reservation = Reservation.objects.create(
+        listing=Listing.objects.get(id=fake.random_int(1, 30)),
+        guest=User.objects.get(id=fake.random_int(1, 10)),
+        start_date=fake.date_between(start_date='-1y', end_date='today'),
+        end_date=fake.date_between(start_date='today', end_date='+1y'),
+        number_of_guests=fake.random_int(1, 10),
+        total_price=fake.random_int(50, 500)
     )

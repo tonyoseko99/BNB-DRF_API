@@ -24,15 +24,13 @@ def home_view(request):
 
 @csrf_exempt
 def user_create(request):
-    user = User.objects.create(
-        first_name=request.POST.get('first_name'),
-        last_name=request.POST.get('last_name'),
-        email=request.POST.get('email'),
-        password=request.POST.get('password'),
-        is_host=request.POST.get('is_host')
-    )
-    serializer = UserSerializer(user)
-    return JsonResponse(serializer.data)
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = UserSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
 
 # get all users
 
@@ -41,7 +39,7 @@ def user_list(request):
     users = User.objects.all()
     serializer = UserSerializer(users, many=True)
 
-    return JsonResponse(serializer.data, safe=False)
+    return JsonResponse({"users": serializer.data}, safe=False)
 
 # get a single user
 
@@ -99,7 +97,7 @@ def listing_list(request):
     listings = Listing.objects.all()
     serializer = ListingSerializer(listings, many=True)
 
-    return JsonResponse(serializer.data, safe=False)
+    return JsonResponse({'listings': serializer.data}, status=200)
 
 
 # get a single listing
@@ -139,25 +137,23 @@ def listing_delete(request, pk):
 # create a reservation
 
 
+@csrf_exempt
 def create_reservation(request):
-    data = {}
-    data['listing'] = request.POST.get('listing')
-    data['guest'] = request.POST.get('guest')
-    data['start_date'] = request.POST.get('start_date')
-    data['end_date'] = request.POST.get('end_date')
-    data['number_of_guests'] = request.POST.get('number_of_guests')
-    data['total_price'] = request.POST.get('total_price')
-    reservation = Reservation.objects.create(**data)
-    data['id'] = reservation.id
-    return JsonResponse(data)
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = ReservationSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
 
 # get all reservations
 
 
 def reservation_list(request):
     reservations = Reservation.objects.all()
-    data = {'results': [{'id': reservation.id, 'listing': reservation.listing.id, 'guest': reservation.guest.id, 'start_date': reservation.start_date, 'end_date': reservation.end_date,
-                         'number_of_guests': reservation.number_of_guests, 'total_price': reservation.total_price} for reservation in reservations]}
+    data = {'reservations': [{'id': reservation.id, 'listing': reservation.listing.id, 'guest': reservation.guest.id, 'start_date': reservation.start_date, 'end_date': reservation.end_date,
+                              'number_of_guests': reservation.number_of_guests, 'total_price': reservation.total_price} for reservation in reservations]}
     return JsonResponse(data)
 
 # get a single reservation

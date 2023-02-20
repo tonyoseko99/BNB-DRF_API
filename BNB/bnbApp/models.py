@@ -27,6 +27,7 @@ class Listing(models.Model):
     price_per_night = models.DecimalField(max_digits=7, decimal_places=2)
     number_of_rooms = models.PositiveSmallIntegerField()
     max_guests = models.PositiveSmallIntegerField()
+    image = models.ImageField(upload_to='images/', null=True, blank=True)
 
     def __str__(self):
         return self.title
