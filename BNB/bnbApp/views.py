@@ -133,20 +133,13 @@ def listing_update(request, pk):
 
 # delete a listing
 
-
-class ListingDelete(LoginRequiredMixin, DeleteView):
-    model = Listing
-    #  get the listing object by id
-
-    def get_object(self, queryset=None):
-        listing_id = self.kwargs.get('pk')
-        return Listing.objects.get(id=listing_id)
-
-    # delete listing
-    def delete(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.object.delete()
-        return JsonResponse({"message": "Listing deleted Successfully"})
+@csrf_exempt
+def listing_delete(request, pk):
+    if request.method == 'DELETE':
+        listing = Listing.objects.get(pk=pk)
+        listing.delete()
+        return JsonResponse({"message": "listing deleted successfully"}, status=200)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 # create a reservation
 
