@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.hashers import make_password
@@ -54,16 +55,28 @@ def user_detail(request, pk):
 
 
 @csrf_exempt
+# update a user using UpdateView
 def user_update(request, pk):
-    user = get_object_or_404(User, pk=pk)
-    data = JSONParser().parse(request)
-    serializer = UserSerializer(user, data=data)
+    try:
+        user = User.objects.get(pk=pk)
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
 
-    serializer = UserSerializer(user)
-    if serializer.is_valid():
-        serializer.save()
-        return JsonResponse(serializer.data)
-    return JsonResponse(serializer.errors, status=400)
+    if request.method == 'PATCH':
+        # try to parse the request data as JSON
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            # if the request data is not JSON, parse it as form data
+            data = request.POST
+
+        serializer = UserSerializer(user, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 
 # delete a user
