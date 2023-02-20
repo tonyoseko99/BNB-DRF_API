@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.hashers import make_password
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
@@ -15,16 +16,15 @@ from .models import User, Listing, Reservation, Review, Amenity, Location, Listi
 
 @csrf_exempt
 def user_create(request):
-    if request.method == 'POST':
-        user = User.objects.create(
-            first_name=request.POST.get('first_name'),
-            last_name=request.POST.get('last_name'),
-            email=request.POST.get('email'),
-            password=request.POST.get('password'),
-            is_host=request.POST.get('is_host')
-        )
-        serializer = UserSerializer(user)
-        return JsonResponse(serializer.data)
+    user = User.objects.create(
+        first_name=request.POST.get('first_name'),
+        last_name=request.POST.get('last_name'),
+        email=request.POST.get('email'),
+        password=request.POST.get('password'),
+        is_host=request.POST.get('is_host')
+    )
+    serializer = UserSerializer(user)
+    return JsonResponse(serializer.data)
 
 # get all users
 
@@ -82,6 +82,7 @@ class UserDelete(LoginRequiredMixin, DeleteView):
 # create a listing
 
 
+@csrf_exempt
 def listing_create(request):
     listing = Listing.objects.create(
         owner=request.POST.get('owner'),
