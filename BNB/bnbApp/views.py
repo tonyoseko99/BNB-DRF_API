@@ -81,18 +81,18 @@ def user_update(request, pk):
 
 # delete a user
 
+@csrf_exempt
+def user_delete(request, pk):
+    try:
+        user = User.objects.get(pk=pk)
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
 
-class UserDelete(LoginRequiredMixin, DeleteView):
-    model = User
-
-    def get_object(self, queryset=None):
-        user_id = self.kwargs.get('pk')
-        return User.objects.get(id=user_id)
-
-    def delete(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.object.delete()
+    if request.method == 'DELETE':
+        user.delete()
         return JsonResponse({'message': 'User deleted successfully'})
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 # create a listing
 

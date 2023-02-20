@@ -9,7 +9,7 @@ urlpatterns = [
     path('user/list/', user_list, name='user_list'),
     path('user/<int:pk>/', user_detail, name='user_detail'),
     path('user/<int:pk>/update/', user_update, name='user_update'),
-    path('user/<int:pk>/delete/', UserDelete.as_view(), name='user_delete'),
+    path('user/<int:pk>/delete/', user_delete, name='user_delete'),
 
     # listing urls
     path('listing/create/', listing_create, name='listing_create'),
