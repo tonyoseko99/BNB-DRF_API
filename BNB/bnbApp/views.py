@@ -73,7 +73,7 @@ def user_update(request, pk):
         serializer = UserSerializer(user, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data)
+            return JsonResponse(serializer.data, {'message': 'User updated successfully'})
         return JsonResponse(serializer.errors, status=400)
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
@@ -99,8 +99,10 @@ def user_delete(request, pk):
 
 @csrf_exempt
 def listing_create(request):
+    owner_id = request.POST.get('owner')
+    owner = User.objects.get(pk=owner_id)
     listing = Listing.objects.create(
-        owner=request.POST.get('owner'),
+        owner = owner,
         title=request.POST.get('title'),
         description=request.POST.get('description'),
         location=request.POST.get('location'),
