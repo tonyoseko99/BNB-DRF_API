@@ -152,30 +152,32 @@ def create_reservation(request):
 
 def reservation_list(request):
     reservations = Reservation.objects.all()
-    data = {'reservations': [{'id': reservation.id, 'listing': reservation.listing.id, 'guest': reservation.guest.id, 'start_date': reservation.start_date, 'end_date': reservation.end_date,
-                              'number_of_guests': reservation.number_of_guests, 'total_price': reservation.total_price} for reservation in reservations]}
-    return JsonResponse(data)
+    serializer = ReservationSerializer(reservations, many=True)
+
+    return JsonResponse({'reservations': serializer.data}, status=200)
 
 # get a single reservation
 
 
 def reservation_detail(request, pk):
     reservation = get_object_or_404(Reservation, pk=pk)
-    data = {'id': reservation.id, 'listing': reservation.listing.id, 'guest': reservation.guest.id, 'start_date': reservation.start_date, 'end_date': reservation.end_date,
-            'number_of_guests': reservation.number_of_guests, 'total_price': reservation.total_price}
-    return JsonResponse(data)
+    serializer = ReservationSerializer(reservation)
+
+    return JsonResponse(serializer.data)
 
 # update a reservation
 
 
-class ReservationUpdate(LoginRequiredMixin, UpdateView):
-    model = Reservation
-    fields = ['listing', 'guest', 'start_date', 'end_date',
-              'number_of_guests', 'total_price']
-
-    def get_object(self, queryset=None):
-        reservation_id = self.kwargs.get('pk')
-        return Reservation.objects.get(id=reservation_id)
+@csrf_exempt
+def reservation_update(request, pk):
+    if request.method == 'PATCH':
+        data = JSONParser().parse(request)
+        reservation = Reservation.objects.get(pk=pk)
+        serializer = ReservationSerializer(reservation, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({"message": "Reservation updated successfully"}, status=200)
+        return JsonResponse(serializer.errors, status=400)
 
 # delete a reservation
 
