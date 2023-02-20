@@ -8,8 +8,8 @@ from django.views.generic import UpdateView, DeleteView
 from django.views.decorators.csrf import csrf_exempt
 
 
-from .serializers import UserSerializer, ListingSerializer, ReservationSerializer, ReviewSerializer, AmenitySerializer, LocationSerializer
-from .models import User, Listing, Reservation, Review, Amenity, Location, ListingAmenity
+from .serializers import UserSerializer, ListingSerializer, ReservationSerializer, ReviewSerializer, AmenitySerializer
+from .models import User, Listing, Reservation, Review, Amenity, ListingAmenity
 
 
 # create a user
@@ -93,25 +93,25 @@ def listing_create(request):
         number_of_rooms=request.POST.get('number_of_rooms'),
         max_guests=request.POST.get('max_guests')
     )
-    data = {'id': listing.id, 'owner': listing.owner.id, 'title': listing.title, 'description': listing.description, 'location': listing.location.id,
-            'price_per_night': listing.price_per_night, 'number_of_rooms': listing.number_of_rooms, 'max_guests': listing.max_guests}
-    return JsonResponse(data)
+    serializer = ListingSerializer(listing)
+    return JsonResponse(serializer.data)
 
 # get all listings
 
 
 def listing_list(request):
     listings = Listing.objects.all()
-    data = {'results': [{'id': listing.id, 'owner': listing.owner.id, 'title': listing.title, 'description': listing.description, 'location': listing.location.id,
-                         'price_per_night': listing.price_per_night, 'number_of_rooms': listing.number_of_rooms, 'max_guests': listing.max_guests} for listing in listings]}
-    return JsonResponse(data)
+    serializer = ListingSerializer(listings, many=True)
+
+    return JsonResponse(serializer.data, safe=False)
+
 
 # get a single listing
 
 
 def listing_detail(request, pk):
     listing = get_object_or_404(Listing, pk=pk)
-    data = {'id': listing.id, 'owner': listing.owner.id, 'title': listing.title, 'description': listing.description, 'location': listing.location.id,
+    data = {'id': listing.id, 'owner': listing.owner.id, 'title': listing.title, 'description': listing.description, 'location': listing.location,
             'price_per_night': listing.price_per_night, 'number_of_rooms': listing.number_of_rooms, 'max_guests': listing.max_guests}
     return JsonResponse(data)
 
@@ -383,57 +383,57 @@ class ListingAmenityDelete(LoginRequiredMixin, DeleteView):
         return JsonResponse({"message": "Listing amenity deleted successfully"})
 
 
-# create a location
+# # create a location
 
 
-def create_location(request):
-    data = {}
-    data['name'] = request.POST.get('name')
-    data['listings'] = request.POST.get('listings')
-    location = Location.objects.create(**data)
-    data['id'] = location.id
-    return JsonResponse(data)
+# def create_location(request):
+#     data = {}
+#     data['name'] = request.POST.get('name')
+#     data['listings'] = request.POST.get('listings')
+#     location = Location.objects.create(**data)
+#     data['id'] = location.id
+#     return JsonResponse(data)
 
-# get all locations
-
-
-def location_list(request):
-    locations = Location.objects.all()
-    data = {'results': [{'id': location.id, 'name': location.name, 'listings': location.listings}
-                        for location in locations]}
-    return JsonResponse(data)
-
-# get a single location
+# # get all locations
 
 
-def location_detail(request, pk):
-    location = get_object_or_404(Location, pk=pk)
-    data = {'id': location.id, 'name': location.name,
-            'listings': location.listings}
-    return JsonResponse(data)
+# def location_list(request):
+#     locations = Location.objects.all()
+#     data = {'results': [{'id': location.id, 'name': location.name, 'listings': location.listings}
+#                         for location in locations]}
+#     return JsonResponse(data)
 
-# update a location
-
-
-class LocationUpdate(LoginRequiredMixin, UpdateView):
-    model = Location
-    fields = ['name', 'listings']
-
-    def get_object(self, queryset=None):
-        location_id = self.kwargs.get('pk')
-        return Location.objects.get(id=location_id)
-
-# delete a location
+# # get a single location
 
 
-class LocationDelete(LoginRequiredMixin, DeleteView):
-    model = Location
+# def location_detail(request, pk):
+#     location = get_object_or_404(Location, pk=pk)
+#     data = {'id': location.id, 'name': location.name,
+#             'listings': location.listings}
+#     return JsonResponse(data)
 
-    def get_object(self, queryset=None):
-        location_id = self.kwargs.get('pk')
-        return Location.objects.get(id=location_id)
+# # update a location
 
-    def delete_location(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.object.delete()
-        return JsonResponse({"message": "Location deleted successfully"})
+
+# class LocationUpdate(LoginRequiredMixin, UpdateView):
+#     model = Location
+#     fields = ['name', 'listings']
+
+#     def get_object(self, queryset=None):
+#         location_id = self.kwargs.get('pk')
+#         return Location.objects.get(id=location_id)
+
+# # delete a location
+
+
+# class LocationDelete(LoginRequiredMixin, DeleteView):
+#     model = Location
+
+#     def get_object(self, queryset=None):
+#         location_id = self.kwargs.get('pk')
+#         return Location.objects.get(id=location_id)
+
+#     def delete_location(self, request, *args, **kwargs):
+#         self.object = self.get_object()
+#         self.object.delete()
+#         return JsonResponse({"message": "Location deleted successfully"})

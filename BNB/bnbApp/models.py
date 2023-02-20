@@ -81,10 +81,10 @@ class ListingAmenity(models.Model):
 # Many to many relationship between Listing and Location
 
 
-class Location(models.Model):
-    name = models.CharField(max_length=100)
-    # reference to the name of a listing and set it to null if the listing is deleted
-    listings = models.ManyToManyField(Listing, related_name='locations')
+# class Location(models.Model):
+#     name = models.CharField(max_length=100)
+#     # reference to the name of a listing and set it to null if the listing is deleted
+#     listings = models.ManyToManyField(Listing, related_name='locations')
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name

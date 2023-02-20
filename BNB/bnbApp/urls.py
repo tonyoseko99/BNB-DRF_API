@@ -56,12 +56,12 @@ urlpatterns = [
          ListingAmenityDelete.as_view(), name='listing_amenity_delete'),
 
     # location urls
-    path('location/create/', create_location, name='location_create'),
-    path('location/list/', location_list, name='location_list'),
-    path('location/<int:pk>/', location_detail, name='location_detail'),
-    path('location/<int:pk>/update/',
-         LocationUpdate.as_view(), name='location_update'),
-    path('location/<int:pk>/delete/',
-         LocationDelete.as_view(), name='location_delete'),
+#     path('location/create/', create_location, name='location_create'),
+#     path('location/list/', location_list, name='location_list'),
+#     path('location/<int:pk>/', location_detail, name='location_detail'),
+#     path('location/<int:pk>/update/',
+#          LocationUpdate.as_view(), name='location_update'),
+#     path('location/<int:pk>/delete/',
+#          LocationDelete.as_view(), name='location_delete'),
 
 ]  # end of urlpatterns
