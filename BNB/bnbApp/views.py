@@ -279,13 +279,15 @@ def amenity_detail(request, pk):
 # update an amenity
 
 
-class AmenityUpdate(LoginRequiredMixin, UpdateView):
-    model = Amenity
-    fields = ['name']
-
-    def get_object(self, queryset=None):
-        amenity_id = self.kwargs.get('pk')
-        return Amenity.objects.get(id=amenity_id)
+def amenity_update(request, pk):
+    if request.method == 'PATCH':
+        data = JSONParser().parse(request)
+        amenity = Amenity.objects.get(pk=pk)
+        serializer = AmenitySerializer(amenity, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({"message": "Amenity updated successfully"}, status=200)
+        return JsonResponse(serializer.errors, status=400)
 
 # delete an amenity
 
