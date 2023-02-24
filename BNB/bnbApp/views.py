@@ -292,17 +292,12 @@ def amenity_update(request, pk):
 # delete an amenity
 
 
-class AmenityDelete(LoginRequiredMixin, DeleteView):
-    model = Amenity
-
-    def get_object(self, queryset=None):
-        amenity_id = self.kwargs.get('pk')
-        return Amenity.objects.get(id=amenity_id)
-
-    def delete_amenity(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.object.delete()
-        return JsonResponse({"message": "Amenity deleted successfully"})
+def amenity_delete(request, pk):
+    if request.method == 'DELETE':
+        amenity = Amenity.objects.get(pk=pk)
+        amenity.delete()
+        return JsonResponse({"message": "Amenity deleted successfully"}, status=200)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 # create Amenities for a listing
 
