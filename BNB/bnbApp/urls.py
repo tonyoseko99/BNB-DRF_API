@@ -41,9 +41,9 @@ urlpatterns = [
     path('amenity/list/', amenity_list, name='amenity_list'),
     path('amenity/<int:pk>/', amenity_detail, name='amenity_detail'),
     path('amenity/<int:pk>/update/',
-         AmenityUpdate.as_view(), name='amenity_update'),
+         amenity_update, name='amenity_update'),
     path('amenity/<int:pk>/delete/',
-         AmenityDelete.as_view(), name='amenity_delete'),
+         amenity_delete, name='amenity_delete'),
 
     # listing amenity urls
     path('listing_amenity/create/', create_listing_amenity,

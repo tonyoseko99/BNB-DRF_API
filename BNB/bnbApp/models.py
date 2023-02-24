@@ -52,7 +52,7 @@ class Reservation(models.Model):
 
 
 class Review(models.Model):
-    reservation = models.OneToOneField(
+    reservation = models.ForeignKey(
         Reservation, on_delete=models.CASCADE, related_name='review')
     text = models.TextField()
     rating = models.PositiveSmallIntegerField()

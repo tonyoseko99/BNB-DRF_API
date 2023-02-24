@@ -17,8 +17,6 @@ from .serializers import UserSerializer, ListingSerializer, ReservationSerialize
 from .models import User, Listing, Reservation, Review, Amenity, ListingAmenity
 
 
-def home_view(request):
-    return JsonResponse({'message': 'Welcome to the BnB API'})
 # create a user
 
 
@@ -41,14 +39,13 @@ def user_list(request):
 
     return JsonResponse({"users": serializer.data}, safe=False)
 
-# get a single user
+# get a single user and show their listings
 
 
 def user_detail(request, pk):
-    user = get_object_or_404(User, pk=pk)
+    user = User.objects.get(pk=pk)
     serializer = UserSerializer(user)
-
-    return JsonResponse(serializer.data)
+    return JsonResponse(serializer.data, safe=False)
 
 # update a user
 

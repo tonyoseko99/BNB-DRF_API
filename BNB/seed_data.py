@@ -39,3 +39,14 @@ for i in range(50):
         number_of_guests=fake.random_int(1, 10),
         total_price=fake.random_int(50, 500)
     )
+
+
+# Create 50 reviews
+for i in range(50):
+    review = Review.objects.create(
+        reservation=Reservation.objects.get(id=fake.random_int(1, 50)),
+        text=fake.paragraph(nb_sentences=3),
+        rating=fake.random_int(1, 5),
+        date=fake.date_between(start_date='-1y', end_date='today')
+    )
+
