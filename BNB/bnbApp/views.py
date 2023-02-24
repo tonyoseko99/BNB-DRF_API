@@ -218,10 +218,9 @@ def review_list(request):
 
 def review_detail(request, pk):
     review = get_object_or_404(Review, pk=pk)
-    data = {'id': review.id, 'listing': review.listing.id,
-            'guest': review.guest.id, }
+    serializer = ReviewSerializer(review)
 
-    return JsonResponse(data)
+    return JsonResponse(serializer.data)
 
 # update a review
 
