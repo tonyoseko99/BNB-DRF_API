@@ -271,8 +271,9 @@ def amenity_list(request):
 
 def amenity_detail(request, pk):
     amenity = get_object_or_404(Amenity, pk=pk)
-    data = {'id': amenity.id, 'name': amenity.name}
-    return JsonResponse(data)
+    serializer = AmenitySerializer(amenity)
+
+    return JsonResponse(serializer.data)
 
 
 # update an amenity
