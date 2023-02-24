@@ -249,11 +249,13 @@ def review_delete(request, pk):
 # create an Amenity
 
 def create_amenity(request):
-    data = {}
-    data['name'] = request.POST.get('name')
-    amenity = Amenity.objects.create(**data)
-    data['id'] = amenity.id
-    return JsonResponse(data)
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = AmenitySerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
 
 # get all amenities
 
