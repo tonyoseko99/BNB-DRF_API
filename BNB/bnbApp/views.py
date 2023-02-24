@@ -238,17 +238,12 @@ def review_update(request, pk):
 # delete a review
 
 
-class ReviewDelete(LoginRequiredMixin, DeleteView):
-    model = Review
-
-    def get_object(self, queryset=None):
-        review_id = self.kwargs.get('pk')
-        return Review.objects.get(id=review_id)
-
-    def delete_review(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.object.delete()
-        return JsonResponse({"message": "Review deleted successfully"})
+def review_delete(request, pk):
+    if request.method == 'DELETE':
+        review = Review.objects.get(pk=pk)
+        review.delete()
+        return JsonResponse({"message": "Review deleted successfully"}, status=200)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 
 # create an Amenity
