@@ -225,13 +225,15 @@ def review_detail(request, pk):
 # update a review
 
 
-class ReviewUpdate(LoginRequiredMixin, UpdateView):
-    model = Review
-    fields = ['reservation', 'text', 'rating', 'date']
-
-    def get_object(self, queryset=None):
-        review_id = self.kwargs.get('pk')
-        return Review.objects.get(id=review_id)
+def review_update(request, pk):
+    if request.method == 'PATCH':
+        data = JSONParser().parse(request)
+        review = Review.objects.get(pk=pk)
+        serializer = ReviewSerializer(review, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({"message": "Review updated successfully"}, status=200)
+        return JsonResponse(serializer.errors, status=400)
 
 # delete a review
 

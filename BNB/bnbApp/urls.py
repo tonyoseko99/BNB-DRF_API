@@ -33,8 +33,8 @@ urlpatterns = [
     path('review/create/', create_review, name='review_create'),
     path('review/list/', review_list, name='review_list'),
     path('review/<int:pk>/', review_detail, name='review_detail'),
-    path('review/<int:pk>/update/', ReviewUpdate.as_view(), name='review_update'),
-    path('review/<int:pk>/delete/', ReviewDelete.as_view(), name='review_delete'),
+    path('review/<int:pk>/update/', review_update, name='review_update'),
+    path('review/<int:pk>/delete/', review_delete, name='review_delete'),
 
     # amenity urls
     path('amenity/create/', create_amenity, name='amenity_create'),
