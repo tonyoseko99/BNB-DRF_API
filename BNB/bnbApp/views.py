@@ -195,14 +195,14 @@ def reservation_delete(request, pk):
 
 
 def create_review(request):
-    data = {}
-    data['reservation'] = request.POST.get('reservation')
-    data['text'] = request.POST.get('text')
-    data['rating'] = request.POST.get('rating')
-    data['date'] = request.POST.get('date')
-    review = Review.objects.create(**data)
-    data['id'] = review.id
-    return JsonResponse(data)
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = ReviewSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
 
 # get all reviews
 
