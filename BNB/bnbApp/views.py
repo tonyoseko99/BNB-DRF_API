@@ -209,9 +209,9 @@ def create_review(request):
 
 def review_list(request):
     reviews = Review.objects.all()
-    data = {'results': [{'id': review.id, 'listing': review.listing.id, 'guest': review.guest.id,
-                         'review': review.review, 'rating': review.rating} for review in reviews]}
-    return JsonResponse(data)
+    serializer = ReviewSerializer(reviews, many=True)
+
+    return JsonResponse({'reviews': serializer.data}, status=200)
 
 # get a single review
 
