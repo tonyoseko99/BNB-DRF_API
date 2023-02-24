@@ -16,9 +16,13 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class ListingSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    review = ReviewSerializer(read_only=True, many=True)
+
     class Meta:
         model = Listing
-        fields = '__all__'
+        fields = ['id', 'user', 'title', 'description', 'location',
+                  'price_per_night', 'number_of_rooms', 'max_guests', 'image', 'review']
 
 
 class ReservationSerializer(serializers.ModelSerializer):
