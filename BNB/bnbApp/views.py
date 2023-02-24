@@ -103,11 +103,10 @@ def listing_list(request):
 def listing_detail(request, pk):
     listing = get_object_or_404(Listing, pk=pk)
     listing_serializer = ListingSerializer(listing)
-    user_serializer = UserSerializer(listing.owner)
-    review = Review.objects.filter(listing=listing)
-    review_serializer = ReviewSerializer(listing.review, many=True)
+    user_serializer = UserSerializer(listing)
+    
 
-    return JsonResponse({'listing': listing_serializer.data, 'owner': user_serializer.data, 'review': review_serializer.data}, status=200)
+    return JsonResponse({'listing': listing_serializer.data}, status=200)
 
 
 # update a listing

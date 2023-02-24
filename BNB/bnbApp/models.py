@@ -1,4 +1,5 @@
 from django.db import models
+from django.forms import ValidationError
 
 # Create your models here.
 
@@ -40,13 +41,41 @@ class Reservation(models.Model):
         Listing, on_delete=models.CASCADE, related_name='reservations')
     guest = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='reservations')
-    start_date = models.DateField()
+    start_date = models.DateField(auto_now_add=True)  # auto_now_add=True
     end_date = models.DateField()
     number_of_guests = models.PositiveSmallIntegerField()
     total_price = models.DecimalField(max_digits=7, decimal_places=2)
 
     def __str__(self):
         return f'{self.guest} - {self.listing} {self.start_date} - {self.end_date}'
+
+    def clean(self):
+        reservations = self.listing.reservations.all()
+        for reservation in reservations:
+            if self.start_date <= reservation.end_date and self.end_date >= reservation.start_date:
+                raise ValidationError(
+                    f'Listing is already reserved for this date range')
+
+        if self.start_date > self.end_date:
+            raise ValidationError(
+                f'Start date must be before end date')
+
+        if self.number_of_guests > self.listing.max_guests:
+            raise ValidationError(
+                f'Number of guests must be less than or equal to {self.listing.max_guests}')
+
+        if self.number_of_guests < 1:
+            raise ValidationError(
+                f'Number of guests must be greater than 0')
+
+        if self.start_date < self.listing.reservations.all().order_by('-end_date').first().end_date:
+            raise ValidationError(
+                f'Start date must be after {self.listing.reservations.all().order_by("-end_date").first().end_date}')
+
+        if (self.end_date - self.start_date).days > 30:
+            raise ValidationError(
+                f'Reservation cannot be longer than 30 days')
+
 
 # Review model
 
