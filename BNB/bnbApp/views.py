@@ -262,9 +262,9 @@ def create_amenity(request):
 
 def amenity_list(request):
     amenities = Amenity.objects.all()
-    data = {'results': [{'id': amenity.id, 'name': amenity.name}
-                        for amenity in amenities]}
-    return JsonResponse(data)
+    serializer = AmenitySerializer(amenities, many=True)
+
+    return JsonResponse({'amenities': serializer.data}, status=200)
 
 # get a single amenity
 
