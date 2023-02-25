@@ -33,6 +33,16 @@ class Listing(models.Model):
     def __str__(self):
         return self.title
 
+    def clean(self):
+        if self.number_of_rooms < 1:
+            raise ValidationError(
+                f'Number of rooms must be greater than 0')
+
+        if self.max_guests < 1:
+            raise ValidationError(
+                f'Maximum number of guests must be greater than 0')
+
+
 # Reservation model
 
 

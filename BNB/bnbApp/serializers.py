@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Listing, Reservation, Review, Amenity
+from .models import User, Listing, Reservation, Review, Amenity, ListingAmenity
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -24,19 +24,27 @@ class ReservationSerializer(serializers.ModelSerializer):
 class AmenitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Amenity
-        fields = '__all__'
+        fields = ['name']
+
+
+class ListingAmenitySerializer(serializers.ModelSerializer):
+    amenity = AmenitySerializer(read_only=True)
+
+    class Meta:
+        model = ListingAmenity
+        # fields should show the name property of the amenity
+        fields = ['amenity']
 
 
 class ListingSerializer(serializers.ModelSerializer):
-    owner = UserSerializer(read_only=True)
-    amenities = AmenitySerializer(read_only=True, many=True)
+    amenities = ListingAmenitySerializer(read_only=True, many=True)
     reservations = ReservationSerializer(read_only=True, many=True)
     review = ReviewSerializer(read_only=True, many=True)
 
     class Meta:
         model = Listing
         fields = ['id', 'title', 'description', 'location',
-                  'price_per_night', 'number_of_rooms', 'max_guests', 'image', 'owner', 'amenities', 'reservations', 'review']
+                  'price_per_night', 'number_of_rooms', 'max_guests', 'image', 'amenities', 'reservations', 'review']
 
 
 # class LocationSerializer(serializers.ModelSerializer):

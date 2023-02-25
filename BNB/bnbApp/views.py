@@ -13,7 +13,7 @@ from django.views.generic import UpdateView, DeleteView
 from django.views.decorators.csrf import csrf_exempt
 
 
-from .serializers import UserSerializer, ListingSerializer, ReservationSerializer, ReviewSerializer, AmenitySerializer
+from .serializers import UserSerializer, ListingSerializer, ReservationSerializer, ReviewSerializer, AmenitySerializer, ListingAmenitySerializer
 from .models import User, Listing, Reservation, Review, Amenity, ListingAmenity
 
 
@@ -104,7 +104,6 @@ def listing_detail(request, pk):
     listing = get_object_or_404(Listing, pk=pk)
     listing_serializer = ListingSerializer(listing)
     user_serializer = UserSerializer(listing)
-    
 
     return JsonResponse({'listing': listing_serializer.data}, status=200)
 
@@ -303,28 +302,29 @@ def amenity_delete(request, pk):
 
 
 def create_listing_amenity(request):
-    data = {}
-    data['listing'] = request.POST.get('listing')
-    data['amenity'] = request.POST.get('amenity')
-    listing_amenity = ListingAmenity.objects.create(**data)
-    data['id'] = listing_amenity.id
-    return JsonResponse(data)
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = ListingAmenitySerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
 
 # get all listing amenities
 
 
 def listing_amenity_list(request):
     listing_amenities = ListingAmenity.objects.all()
-    data = {'results': [{'id': listing_amenity.id, 'listing': listing_amenity.listing.id, 'amenity': listing_amenity.amenity.id}
-                        for listing_amenity in listing_amenities]}
-    return JsonResponse(data)
+    serializer = ListingAmenitySerializer(listing_amenities, many=True)
+
+    return JsonResponse({'listing_amenities': serializer.data}, status=200)
 
 # get a single listing amenity
 
 
 def listing_amenity_detail(request, pk):
     listing_amenity = get_object_or_404(ListingAmenity, pk=pk)
-    data = {'id': listing_amenity.id, 'listing': listing_amenity.listing.id,
+    data = {'id': listing_amenity.id, 'listing': listing_amenity.listing.name,
             'amenity': listing_amenity.amenity.id}
     return JsonResponse(data)
 
