@@ -53,9 +53,9 @@ urlpatterns = [
     path('listing_amenity/<int:pk>/', listing_amenity_detail,
          name='listing_amenity_detail'),
     path('listing_amenity/<int:pk>/update/',
-         ListingAmenityUpdate.as_view(), name='listing_amenity_update'),
+         listing_amenity_update, name='listing_amenity_update'),
     path('listing_amenity/<int:pk>/delete/',
-         ListingAmenityDelete.as_view(), name='listing_amenity_delete'),
+         listing_amenity_delete, name='listing_amenity_delete'),
 
     # location urls
     #     path('location/create/', create_location, name='location_create'),

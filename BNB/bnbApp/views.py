@@ -324,36 +324,34 @@ def listing_amenity_list(request):
 
 def listing_amenity_detail(request, pk):
     listing_amenity = get_object_or_404(ListingAmenity, pk=pk)
-    data = {'id': listing_amenity.id, 'listing': listing_amenity.listing.name,
-            'amenity': listing_amenity.amenity.id}
-    return JsonResponse(data)
+    serializer = ListingAmenitySerializer(listing_amenity)
+
+    return JsonResponse(serializer.data)
 
 # update a listing amenity
 
 
-class ListingAmenityUpdate(LoginRequiredMixin, UpdateView):
-    model = ListingAmenity
-    fields = ['listing', 'amenity']
-
-    def get_object(self, queryset=None):
-        listing_amenity_id = self.kwargs.get('pk')
-        return ListingAmenity.objects.get(id=listing_amenity_id)
+def listing_amenity_update(request, pk):
+    if request.method == 'PATCH':
+        data = JSONParser().parse(request)
+        listing_amenity = ListingAmenity.objects.get(pk=pk)
+        serializer = ListingAmenitySerializer(
+            listing_amenity, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({"message": "Listing amenity updated successfully"}, status=200)
+        return JsonResponse(serializer.errors, status=400)
 
 
 # delete a listing amenity
 
 
-class ListingAmenityDelete(LoginRequiredMixin, DeleteView):
-    model = ListingAmenity
-
-    def get_object(self, queryset=None):
-        listing_amenity_id = self.kwargs.get('pk')
-        return ListingAmenity.objects.get(id=listing_amenity_id)
-
-    def delete_listing_amenity(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.object.delete()
-        return JsonResponse({"message": "Listing amenity deleted successfully"})
+def listing_amenity_delete(request, pk):
+    if request.method == 'DELETE':
+        listing_amenity = ListingAmenity.objects.get(pk=pk)
+        listing_amenity.delete()
+        return JsonResponse({"message": "Listing amenity deleted successfully"}, status=200)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 
 # # create a location
